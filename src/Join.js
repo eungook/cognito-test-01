@@ -1,59 +1,35 @@
-import React from 'react';
-
-// import config from './config';
-// import {
-//   CognitoUserPool,
-//   CognitoUserAttribute,
-// 	CognitoUser,
-// } from "amazon-cognito-identity-js";
-
-// console.log('config:', config);
-
-// var poolData = {
-// 	UserPoolId: config.UserPoolId, // Your user pool id here
-// 	ClientId: config.ClientId, // Your client id here
-// };
-
-// // var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
-// var userPool = new CognitoUserPool(poolData);
-
-// var attributeList = [];
-
-// var dataEmail = {
-// 	Name: 'email',
-// 	Value: 'email2@mydomain.com',
-// };
-
-// var dataPhoneNumber = {
-// 	Name: 'phone_number',
-// 	Value: '+15555555556',
-// };
-// // var attributeEmail = new AmazonCognitoIdentity.CognitoUserAttribute(dataEmail);
-// var attributeEmail = new CognitoUserAttribute(dataEmail);
-// // var attributePhoneNumber = new AmazonCognitoIdentity.CognitoUserAttribute(
-// var attributePhoneNumber = new CognitoUserAttribute(
-// 	dataPhoneNumber
-// );
-
-// attributeList.push(attributeEmail);
-// attributeList.push(attributePhoneNumber);
-
-// userPool.signUp('username3', 'password', attributeList, null, function(
-// 	err,
-// 	result
-// ) {
-// 	if (err) {
-// 		alert(err.message || JSON.stringify(err));
-// 		return;
-// 	}
-// 	var cognitoUser = result.user;
-// 	console.log('user name is ' + cognitoUser.getUsername());
-// });
+import { useState, } from 'react';
+import * as cognito from './cognito';
 
 export default () => {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [password2, setPassword2] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone_number, setPhoneNumber] = useState('');
+
   return (
     <div>
       <h3>hello, world. this is Join.js</h3>
+      <p>username: <input type="text" autoComplete="username" value={username} onChange={e => setUsername(e.target.value)} /> </p>
+      <p>password: <input type="password" name="password" autoComplete="new-password" value={password} onChange={e => setPassword(e.target.value)} /> </p>
+      <p>re-enter password: <input type="password" name="password2" autoComplete="new-password" value={password2} onChange={e => setPassword2(e.target.value)} /> </p>
+      <p>email: <input type="text" autoComplete="email" value={email} onChange={e => setEmail(e.target.value)} /> </p>
+      <p>phone_number: <input type="text" autoComplete="tel" value={phone_number} onChange={e => setPhoneNumber(e.target.value)} /> </p>
+      <p><input type="button" value="join" onClick={onClickJoin} /></p>
     </div>
   );
+
+  async function onClickJoin() {
+    console.log({
+      username,
+      password,
+      password2,
+      email,
+      phone_number,
+    });
+
+    const result = await cognito.signUp(username, password, email, phone_number);
+    console.log({ result });
+  }
 }
