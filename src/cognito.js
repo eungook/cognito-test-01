@@ -23,12 +23,39 @@ export async function signUp(username, password, email, phone_number) {
       if (err) {
         alert(err.message || JSON.stringify(err));
         reject(err);
-        return; // early return
+        return false; // early return
       }
 
       resolve(result);
     }
   });
 
+  return promise;
+}
+
+/**
+ * 가입 인증
+ */
+export async function confirmRegistration(username, code) {
+  var userData = {
+    Username: username,
+    Pool: userPool,
+  };
+  const cognitoUser = new CognitoUser(userData);
+  
+  const promise = new Promise((resolve, reject) => {
+    cognitoUser.confirmRegistration(code, true, callback, null);
+
+    function callback(err, result) {
+      if (err) {
+        alert(err.message || JSON.stringify(err));
+        reject(err);
+        return false; // early return
+      }
+
+      resolve(result);
+    }
+  });
+  
   return promise;
 }
