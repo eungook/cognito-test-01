@@ -2,7 +2,8 @@ import config from './config';
 import {
   CognitoUserPool,
   CognitoUserAttribute,
-	CognitoUser,
+  CognitoUser,
+  AuthenticationDetails,
 } from 'amazon-cognito-identity-js';
 
 const poolData = { ...config, };
@@ -57,5 +58,47 @@ export async function confirmRegistration(username, code) {
     }
   });
   
+  return promise;
+}
+
+
+/**
+ * 로그인
+ */
+export async function authenticateUser(username, password) {
+  const authenticationData = {
+    Username: username,
+    Password: password,
+  };
+  const authenticationDetails = new AuthenticationDetails(authenticationData);
+  const userData = {
+    Username: username,
+    Pool: userPool,
+  };
+  const cognitoUser = new CognitoUser(userData);
+
+  const promise = new Promise((resolve, reject) => {
+    cognitoUser.authenticateUser(authenticationDetails, {
+      onSuccess,
+      onFailure,
+      // newPasswordRequired?: (userAttributes: any, requiredAttributes: any) => void;
+      // mfaRequired?: (challengeName: any, challengeParameters: any) => void;
+      // totpRequired?: (challengeName: any, challengeParameters: any) => void;
+      // customChallenge?: (challengeParameters: any) => void;
+      // mfaSetup?: (challengeName: any, challengeParameters: any) => void;
+      // selectMFAType?: (challengeName: any, challengeParameters: any) => void;
+    });
+
+    function onSuccess(session, userConfirmationNecessary) {
+      console.log('onSuccess()', { session, userConfirmationNecessary });
+      resolve(session);
+    }
+
+    function onFailure(err) {
+      console.log('onFailure()', { err });
+      reject(err);
+    }
+  });
+
   return promise;
 }
